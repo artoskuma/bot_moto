@@ -3,6 +3,8 @@ print("PYTHON VERSION:", sys.version)
 
 import os
 import json
+import threading
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
@@ -126,9 +128,29 @@ async def status(update: Update, context: ContextTypes.DEFAULT_TYPE):
     msgs = avaliar_status(km_atual, data)
     await update.message.reply_text("\n".join(msgs))
 
+class HealthHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-type", "text/plain")
+        self.end_headers()
+        self.wfile.write(b"Bot is running")
+
+def start_http_server():
+    port = int(os.getenv("PORT", 10000))
+    server = HTTPServer(("0.0.0.0", port), HealthHandler)
+    print(f"HTTP server listening on port {port}")
+    server.serve_forever()
+
+
 # --- Inicialização do bot ---
 def main():
-    print("Iniciando bot...")  # Útil para ver logs no Render
+    print("Iniciando bot...")
+
+    threading.Thread(
+        target=start_http_server,
+        daemon=True
+    ).start()
+
     app = Application.builder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("km", km))
