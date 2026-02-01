@@ -136,7 +136,7 @@ def main():
     app.add_handler(CommandHandler("oleo", oleo))
     app.add_handler(CommandHandler("status", status))
 
-    app.run_polling()
+    app.run_polling(stop_signals=None)
 
 if __name__ == "__main__":
     main()
