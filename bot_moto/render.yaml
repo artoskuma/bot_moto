@@ -1,0 +1,7 @@
+services:
+  - type: worker
+    name: bot-moto
+    runtime: python
+    pythonVersion: 3.11.0
+    buildCommand: pip install -r requirements.txt
+    startCommand: python bot_moto.py
