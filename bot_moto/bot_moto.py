@@ -1,3 +1,6 @@
+import sys
+print("PYTHON VERSION:", sys.version)
+
 import os
 import json
 from pathlib import Path
